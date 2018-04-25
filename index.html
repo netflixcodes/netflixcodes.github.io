@@ -1,8 +1,101 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.js"></script>
+		<style>
+			html, body{
+				margin: 0;
+				background: #564d4d;
+			}
+			#MainBody{
+					/*Set width for mobile as well*/
+				max-width: 8in;
+				width: calc(100% - 10px);
+				margin: 0 auto;
+				background: #ecf0f1;
+				border-radius: 10px;
+				overflow: hidden;
+			}
+			#MainBody #Header{
+				padding: 0.5em 1em;
+				text-align: right;
+			}
+			#Header > input{
+				border-radius: 15px;
+				font-size: 15px;
+				padding: 5px;
+				border-top: 1px solid #564d4d;
+				border-left: 1px solid #564d4d;
+				border-right: 1px solid #564d4d;
+				border-bottom: 1px solid #564d4d;
+			}
+			#Header > input:focus{
+				outline: 0;
+			}
+			
+			#MainBody #Body{
+				border-top: 1px solid grey;
+			}
+			h1{
+				color: white;
+				font-family: Arial;
+					text-align: center;
+			}
+
+			#Body .Listing{
+				padding: 5px 10px;
+				border-bottom: 1px dotted rgba(200,200,200,0.8);
+				transition: background 0.25s;
+				cursor: pointer;
+				font-family: Arial;
+				position: relative;
+				font-size: 22px;
+			}
+			#Body .Listing:hover{
+				background: rgba(0,0,0,0.2);
+			}
+
+			#Body .Listing #Key{
+				position: absolute;
+				right: 10px;
+				top: 0;
+				margin-top: 6px;
+			}
+		</style>
+		<script src="codes.js"></script>
+		<script>
+			var App = angular.module("App", []); 
+			App.controller("Controller", function($scope){
+				$scope.Codes = Codes;
+
+				$scope.VisibleCodes = $scope.Codes;
+
+				$scope.Search = function(Query){
+					$scope.VisibleCodes = $scope.Codes.filter(function(Listing){
+						return Listing[Object.keys(Listing)[0]].toLowerCase().indexOf(Query.toLowerCase()) != -1;
+					});
+				}
+
+				$scope.Navigate = function(index){
+					var code = Object.keys($scope.VisibleCodes[index])[0];
+					var win = window.open("https://www.netflix.com/browse/genre/" + code, "_blank");
+					win.focus();
+				}
+			});
+		</script>
 	</head>
-	<body>
-		Hello world!
+	<body ng-app="App" ng-controller="Controller">
+		<h1><span style="color: red">SON</span> of NetflixCodes</h1>
+		<div id="MainBody">
+			<div id="Header">
+				<input type="text" placeholder="Search" ng-model="Query" ng-change="Search(Query)">
+			</div>
+			<div id="Body">
+				<div class="Listing" ng-repeat="(key, value) in VisibleCodes track by $index" ng-click="Navigate($index)">
+					<div ng-repeat="(_key, _value) in value">{{_value}} <pre id="Key">{{_key}}</pre></div>
+				</div>
+			</div>
+		</div>
 	</body>
 </html>
